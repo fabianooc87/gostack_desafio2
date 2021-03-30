@@ -1,6 +1,6 @@
 const express = require("express");
 const cors = require("cors");
-const { uuid, isUuid } = require('uuidv4');
+const { v4: uuidv4 } = require('uuid');
 
 // const { v4: uuid, validate: isUuid } = require('uuid');
 
@@ -11,18 +11,17 @@ app.use(cors());
 
 const repositories = [];
 
-
 app.get("/repositories", (request, response) => {
   return response.json(repositories);
 });
 
 app.post("/repositories", (request, response) => {
-  const { title, url, techs } = request.query;
+  const { title, url, techs } = request.body;
   const repository = {
-    id: uuid(),
-    title: title,
-    url: url,
-    techs: techs.split(","), // ["Node.js", "Reactive"]
+    id: uuidv4(),
+    title,
+    url,
+    techs, // ["Node.js", "Reactive"]
     likes: 0
   };
   repositories.push(repository);
@@ -31,14 +30,14 @@ app.post("/repositories", (request, response) => {
 
 app.put("/repositories/:id", (request, response) => {
   const { id } = request.params;
-  const { title, url, techs } = request.query;
+  const { title, url, techs } = request.body;
   const index = repositories.findIndex( x => x.id == id );
   if (index >= 0) {
     const repository = { 
       id: id, 
       title: title || repositories[index].title, 
       url: url || repositories[index].url, 
-      techs: techs.split(",") || repositories[index].techs, 
+      techs: techs || repositories[index].techs, 
       likes: repositories[index].likes 
     };
     repositories[index] = repository;
